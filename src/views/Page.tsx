@@ -69,7 +69,7 @@ export default class Page extends Component<PageProps, { contentTypes: ContentTy
                     <Flex style={{marginRight: '0.25rem'}}><ProductIcon icon="Spaces" size="medium" color="positive" /></Flex>
                     Dashboard
                   </Tab>
-                  <Tab
+                  {/* <Tab
                     id="incomplete-tab"
                     selected={props.location.pathname === '/incomplete'}
                     onSelect={() => {
@@ -77,7 +77,7 @@ export default class Page extends Component<PageProps, { contentTypes: ContentTy
                     }}>
                     <Flex style={{marginRight: '0.25rem'}}><ProductIcon icon="Content" size="medium" color="positive" /></Flex>
                     Incomplete entries
-                  </Tab>
+                  </Tab> */}
                 </>
               )}
             />

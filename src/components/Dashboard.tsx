@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { ContentType, PageExtensionSDK } from '@contentful/app-sdk';
-import { TabPanel, Heading, Paragraph, Button } from '@contentful/forma-36-react-components';
+import { TabPanel, Heading, Paragraph, Button, Pill, Flex } from '@contentful/forma-36-react-components';
 import { ProductIcon } from '@contentful/forma-36-react-components/dist/alpha';
 
 import Collection from './Collection';
@@ -24,7 +24,7 @@ export default function Dashboard({ sdk, contentTypes }: DashboardProps) {
     total: null,
     published: null,
     scheduled: null,
-    recent: null,
+    recent: null
   });
 
   //  TODO Get user tag based on current logged in USER
@@ -36,41 +36,37 @@ export default function Dashboard({ sdk, contentTypes }: DashboardProps) {
   //   }
   // }
 
+  const userRolesToTagIds = (user) => {
+    const userRoles = sdk.user.spaceMembership.roles // Current logged in user role e.g. "Country: FR" Role
 
-  const entryData = {
-    metadata: {
-      tags: [
-        {
-          sys: {
-            type: 'Link',
-            linkType: 'Tag',
-            id: 'countryUk',
-          }
+    // Mapping through Role(s)
+    return userRoles.map(role => {
+      // Converting role name to id. "Country: FR" -> countryFR
+      const [roleName, roleCode] = role.name.split(': ');
+      const cleanRole = roleName.toLowerCase() + roleCode.substr(0, 1) + roleCode.substr(1).toLowerCase();
+
+      return {
+        sys: {
+          type: 'Link',
+          linkType: 'Tag',
+          id: cleanRole,
         }
-      ]
-    }
+      };
+    })
   }
 
-  // Create new Post with current logged in User Tag(s)
   const createPost = async () => {
-
-  if (sdk.user.spaceMembership.admin === false ) {
-    alert('Yoooooo I\'m not admin')
-  }
-
-    // if (sdk.user.spaceMembership.admin === false ) {
-      const newEntry = await sdk.space.createEntry('post', entryData);
-      sdk.navigator.openEntry(newEntry.sys.id);
-    // }
+    const newEntry = await sdk.space.createEntry('post', {
+      metadata: {
+        tags: userRolesToTagIds(sdk.user)
+      }
+    });
+    sdk.navigator.openEntry(newEntry.sys.id);
   }
 
   useEffect(() => {
     async function fetchData() {
       // Fetch some basic statistics.
-      console.log("sdk.user.spaceMembership.roles", sdk.user.spaceMembership.roles)
-      console.log("sdk.user.spaceMembership.admin", sdk.user.spaceMembership.admin)
-      console.log("sdk.user.spaceMembership", sdk.user.spaceMembership)
-
       const [total, published, scheduled] = await Promise.all([
         sdk.space
           .getEntries()
@@ -94,23 +90,31 @@ export default function Dashboard({ sdk, contentTypes }: DashboardProps) {
         .then((entries) => entries.items)
         .catch(() => []);
 
-
-        console.log(recent)
-
       // Set the final data. Loading complete.
       setData({ total, published, scheduled, recent });
     }
 
+    // getUserRole();
     fetchData();
   }, []);
 
   return (
-    <TabPanel id="dashboard" className="f36-margin-top--xl">
+    <TabPanel id="dashboard" className="f36-margin-top--l">
+        <Heading>Hello {sdk.user.firstName}</Heading>
+        { sdk.user.spaceMembership.roles &&
+          <Flex className="f36-margin-bottom--l f36-margin-top--s" alignItems="center">
+            <Paragraph>My User Role{sdk.user.spaceMembership.roles.length >= 2 ? "s:" : ":"}</Paragraph>
+            {sdk.user.spaceMembership.roles.map(role => {
+              return (
+                <Pill label={role.name} key={role.name} className="f36-margin-right--xs f36-margin-left--xs" />
+                )
+            })}
+          </Flex>
+        }
+
       <div className="f36-margin-bottom--l">
         <Button onClick={createPost}>Create Post</Button>
       </div>
-
-      {console.log(data)}
 
       <div id="collections">
         <Collection label="Total entries" value={data.total} />
