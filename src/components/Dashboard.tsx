@@ -82,6 +82,8 @@ export default function Dashboard({ sdk, contentTypes }: DashboardProps) {
           .catch(() => 0),
       ]);
 
+      console.log(sdk.user.spaceMembership.roles)
+
       setData({ ...data, total, published, scheduled });
 
       // Fetch some entries were last updated by the current user.
@@ -94,14 +96,13 @@ export default function Dashboard({ sdk, contentTypes }: DashboardProps) {
       setData({ total, published, scheduled, recent });
     }
 
-    // getUserRole();
     fetchData();
   }, []);
 
   return (
     <TabPanel id="dashboard" className="f36-margin-top--l">
         <Heading>Hello {sdk.user.firstName}</Heading>
-        { sdk.user.spaceMembership.roles &&
+        { sdk.user.spaceMembership.roles.length >= 1 && (
           <Flex className="f36-margin-bottom--l f36-margin-top--s" alignItems="center">
             <Paragraph>My User Role{sdk.user.spaceMembership.roles.length >= 2 ? "s:" : ":"}</Paragraph>
             {sdk.user.spaceMembership.roles.map(role => {
@@ -110,7 +111,8 @@ export default function Dashboard({ sdk, contentTypes }: DashboardProps) {
                 )
             })}
           </Flex>
-        }
+        )}
+
 
       <div className="f36-margin-bottom--l">
         <Button onClick={createPost}>Create Post</Button>
