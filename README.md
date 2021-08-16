@@ -1,4 +1,4 @@
-# Page location example
+# Dashboard - Page location example
 This example shows how an app with a page location can be built. It creates a simple dashboard with information about your content and implements routing with `react-router-dom`.
 
 ## How to use
