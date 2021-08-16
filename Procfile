@@ -1,0 +1,1 @@
+web: http-server -d false .
