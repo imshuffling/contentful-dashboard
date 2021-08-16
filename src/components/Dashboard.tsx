@@ -101,18 +101,24 @@ export default function Dashboard({ sdk, contentTypes }: DashboardProps) {
 
   return (
     <TabPanel id="dashboard" className="f36-margin-top--l">
-        <Heading>Hello {sdk.user.firstName}</Heading>
-        { sdk.user.spaceMembership.roles.length >= 1 && (
-          <Flex className="f36-margin-bottom--l f36-margin-top--s" alignItems="center">
-            <Paragraph>My User Role{sdk.user.spaceMembership.roles.length >= 2 ? "s:" : ":"}</Paragraph>
-            {sdk.user.spaceMembership.roles.map(role => {
-              return (
-                <Pill label={role.name} key={role.name} className="f36-margin-right--xs f36-margin-left--xs" />
-                )
-            })}
-          </Flex>
-        )}
 
+          <Flex className="f36-margin-bottom--l f36-margin-top--s" alignItems="center">
+            <div>
+              <Heading>Hello {sdk.user.firstName}</Heading>
+            </div>
+            <div>
+            { sdk.user.spaceMembership.roles.length >= 1 && (
+            <>
+                {sdk.user.spaceMembership.roles.map(role => {
+                  return (
+                    <Pill label={role.name} key={role.name} className="f36-margin-right--xs f36-margin-left--xs" />
+                    )
+                })}
+            </>
+            )}
+            {sdk.user.spaceMembership.admin && <Pill className="f36-margin-right--xs f36-margin-left--xs" label="Admin" /> }
+            </div>
+          </Flex>
 
       <div className="f36-margin-bottom--l">
         <Button onClick={createPost}>Create Post</Button>
